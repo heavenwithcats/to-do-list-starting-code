@@ -1,25 +1,23 @@
 const formidable = require('formidable');
 const { create, get, remove } = require('../model/todo')
 
-exports.create = (req, res) => {
-    const form = new formidable.IncomingForm();
-    form.keepExtensions = true;
-    form.parse(req, async (err, fields) => {
-        const { description } = fields;
-        if (!fields.description) {
-            return res.status(400).json({error: 'Description is required',
+exports.create = async (req, res) => {
+  console.log('--- CREATE CONTROLLER HIT ---');
+  console.log('req.body received:', req.body);
 
-            })
-        }
-        try {
-            const newTask = await create(description);
-            return res.status(201).send({ data: newTask.rows[0]});
-        } catch (error) {
-            return res.status(400).json({
-                error,
-            });
-        }
-    });
+  const { description } = req.body;
+
+  if (!description) {
+    return res.status(400).json({ error: 'Description is required' });
+  }
+
+  try {
+    // Assuming 'create' is your database helper function to insert the task
+    const newTask = await create(description); 
+    return res.status(201).send({ data: newTask.rows[0] });
+  } catch (error) {
+    return res.status(400).json({ error: error.message || error });
+  }
 };
 
 exports.read = async (req, res) => {
@@ -36,7 +34,9 @@ exports.read = async (req, res) => {
 
 exports.removeTodo = async (req, res) => {
     try {
-        await remove();
+     const { id } = req.params;
+
+        await remove(id);
         return res.status(200).send({ data: id });
 
     } catch (err) {

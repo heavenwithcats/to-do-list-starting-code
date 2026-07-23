@@ -23,26 +23,32 @@ const handleDelete = async (id) => {
     await removeTodo(id);
     fetchTodos();
   } catch (err) {
-    setError(err);
+    setError(err.message);
   }
 }
 // Create a handleSubmit() function to add new to-do list
 const handleSubmit = async (e) => {
   e.preventDefault();
-  setError();
-  const data = new FormData(e.currentTarget);
-  try {
-  data.set('description', todo.description);
-  const newTodo = await createTodo(data);
-  if (newTodo.error) {
-    setError(newTodo.error);
-  }
-  setTodo({description: ''});
-  fetchTodos();
-  } catch (err) {
-  setError(err);
+  setError(''); // Clear previous errors
+
+  // Guard clause: don't submit empty items
+  if (!todo.description || !todo.description.trim()) {
+    return;
   }
 
+  try {
+    // Send a plain JS object instead of FormData
+    const newTodo = await createTodo({ description: todo.description });
+
+    if (newTodo && newTodo.error) {
+      setError(newTodo.error);
+    } else {
+      setTodo({ description: '' }); // Clear input field
+      fetchTodos(); // Refresh the list from backend
+    }
+  } catch (err) {
+    setError(err.message || 'Failed to add to-do');
+  }
 };
   useEffect(() => {
     // Initialize todoList

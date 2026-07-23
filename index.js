@@ -7,8 +7,15 @@ const todoRoutes = require('./routes/todo');
 const app = express();
 const port = process.env.PORT || 8000;
 
+app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
+
 // route middlewares
-app.use('/api', todoRoutes);
+app.use('/', todoRoutes);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console

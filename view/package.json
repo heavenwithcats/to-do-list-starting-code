@@ -37,6 +37,6 @@
   },
   "devDependencies": {
     "eslint-plugin-react": "^7.26.1"
-  },
-  "proxy": "http://localhost:8000"
+  }
+
 }
